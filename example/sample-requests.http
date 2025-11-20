@@ -1,0 +1,45 @@
+### Simple alg=none admin token in Authorization header
+
+GET /api/profile HTTP/1.1
+Host: 127.0.0.1:5000
+User-Agent: Burp
+Accept: */*
+Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMjMiLCJuYW1lIjoiRGVtbyBVc2VyIiwicm9sZSI6ImFkbWluIn0.x
+Connection: close
+
+
+### HS256 long-lived token in Cookie
+
+GET /api/data HTTP/1.1
+Host: 127.0.0.1:5000
+User-Agent: Burp
+Accept: */*
+Cookie: sessionJwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1MSIsIm5hbWUiOiJBUEkgQ2xpZW50Iiwicm9sZSI6InVzZXIiLCJleHAiOjE3Njg3OTc0MjR9.x
+Connection: close
+
+
+### Expired token in JSON body
+
+POST /api/login HTTP/1.1
+Host: 127.0.0.1:5000
+User-Agent: Burp
+Accept: application/json
+Content-Type: application/json
+Connection: close
+
+{
+  "username": "demo",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1MiIsIm5hbWUiOiJPbGQgVG9rZW4iLCJleHAiOjE3NjM2MTI4MjR9.x"
+}
+
+
+### Non-numeric exp in form body
+
+POST /api/refresh HTTP/1.1
+Host: 127.0.0.1:5000
+User-Agent: Burp
+Accept: */*
+Content-Type: application/x-www-form-urlencoded
+Connection: close
+
+grant_type=refresh_token&refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1MyIsImV4cCI6InRvbW9ycm93In0.x
