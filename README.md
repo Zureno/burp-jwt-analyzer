@@ -119,3 +119,177 @@ The issue detail includes:
 
    ```text
    [+] JWT Analyzer + Misconfig Scanner loaded
+
+Usage
+1. JWT Analyzer Tab
+
+
+Intercept or send a request that contains a JWT:
+
+
+e.g., a request with
+Authorization: Bearer eyJ...
+
+
+
+
+Select the request in Proxy, Repeater, or Target.
+
+
+In the Request editor panel, click the “JWT Analyzer” tab.
+
+
+You will see:
+
+
+=== JWT #1 ===, === JWT #2 ===, etc. for multiple tokens
+
+
+[Decoded Header] – pretty-printed JSON (or raw text)
+
+
+[Decoded Payload] – pretty-printed JSON (or raw text)
+
+
+[Analysis / Potential Misconfigurations] – bullet list of findings
+
+
+
+
+If no tokens are present, the tab shows:
+
+No JWT tokens detected.
+
+2. Passive Scanner Issue
+To generate and view issues:
+
+
+Right-click the request (or response) containing a JWT.
+
+
+Choose “Do passive scan”.
+
+
+Go to:
+Target -> Site map -> Issues
+
+
+Look for:
+
+JWT Misconfiguration / Weak Claims
+
+
+
+Open the issue to see:
+
+
+Token snippet
+
+
+Decoded header/payload
+
+
+List of misconfig bullets
+
+
+Severity (High / Medium / Information)
+
+
+
+Configuration
+At the top of JwtAnalyzer.py there are simple configuration variables:
+# Expected algorithms for your environment
+EXPECTED_ALGS = ["RS256", "ES256"]
+
+# How long is "too long" for exp, in seconds (30 days here)
+LONG_EXP_THRESHOLD_SECONDS = 60 * 60 * 24 * 30
+
+You can change these to match your environment:
+
+
+Example for a stricter backend:
+EXPECTED_ALGS = ["RS256"]
+LONG_EXP_THRESHOLD_SECONDS = 60 * 15  # 15 minutes
+
+
+
+
+Example Test Requests
+You can test the extension quickly using Burp Repeater against a local HTTP server (python -m http.server 5000):
+GET /api/profile HTTP/1.1
+Host: 127.0.0.1:5000
+User-Agent: Burp
+Accept: */*
+Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMjMiLCJuYW1lIjoiRGVtbyBVc2VyIiwicm9sZSI6ImFkbWluIn0.x
+Connection: close
+
+This token should trigger:
+
+
+alg='none' misconfiguration (High severity)
+
+
+Missing exp, iat, iss, aud
+
+
+Role claim warning
+
+
+
+Limitations
+
+
+This extension does not verify signatures or keys.
+
+
+It is static analysis only on the token structure and claims.
+
+
+
+
+JWT detection is based on a regex and may:
+
+
+Miss non-standard encodings
+
+
+Occasionally pick up JWT-like strings that are not used as auth tokens
+
+
+
+
+Always validate results and combine with deeper testing and source review where possible.
+
+Roadmap / Ideas
+Possible future improvements:
+
+
+GUI-based configuration (edit expected algs and max TTL from Burp UI)
+
+
+Signature verification against a provided JWK set
+
+
+Support for more JWT-like token formats
+
+
+Export decoded tokens/misconfigs as a report
+
+
+
+License
+This project is licensed under the MIT License (or whatever you choose).
+
+Author
+Your Name Here
+
+
+Security / Application Security / AppSec Engineer
+
+
+Feel free to open issues or PRs for feature requests and bug reports.
+
+
+
+You can swap in your real name, tweak the examples, and adjust the config/roadmap sections however you like.
+::contentReference[oaicite:0]{index=0}
