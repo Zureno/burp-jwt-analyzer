@@ -245,7 +245,6 @@ You can use any JWT-bearing traffic, or spin up a simple test server. For exampl
    - Scanner issues
      
 6. **Implementation notes / architecture**
-
   BurpExtender
   -  Implements IBurpExtender, IMessageEditorTabFactory, IScannerCheck, ITab, IContextMenuFactory
   Registers:
@@ -254,11 +253,9 @@ You can use any JWT-bearing traffic, or spin up a simple test server. For exampl
   -  Suite tab (JWT Dashboard)
   -  Context menu factory
   Holds global config and token records (_token_by_fingerprint)
-
   JwtAnalyzerTab
   -  Per-message UI: header/payload/findings.
   -  Uses regex to find all JWT-looking strings in the message.
-  
   JwtDashboardPanel
   - Suite-level dashboard:
     - Summary labels
@@ -270,17 +267,15 @@ You can use any JWT-bearing traffic, or spin up a simple test server. For exampl
   - In-memory representation of a unique token fingerprint.
   CustomScanIssue
   - Burp IScanIssue implementation for JWT misconfig findings.
-    
 7. **Performance considerations**
 
   Only the first 500,000 bytes (MAX_SCAN_BYTES) of a request/response are scanned to avoid lag on very large bodies.
   Fingerprinting ignores signatures (header+payload only) so the same logical token with different signatures still maps to one record.
-
 8. **Limitations / future ideas**
-
    Analysis is heuristic; it doesn’t verify signatures or keys.
    No automatic active scanning (beyond manual Repeater helpers).
    Could be extended with:
     - JWK / JWKS parsing and validation
     - ID-swap/BOLA helpers
     - Better mapping of tokens to users/tenants across a test
+
